@@ -79,12 +79,15 @@ class Twitchy(Flox):
                 item_obj = StreamItem
                 limit = 100
             else:
-                return
+                # Put comma deliminated list in the user_logins argument
+                _iterator = self.client.get_streams(user_logins=[])
+                item_obj = StreamItem
+                # return
             for item in islice(_iterator, 0, limit or LIMIT):
                 self.add_item(**item_obj(
                     item,
                     cache_name=self.name,
-                    method=self.open_channel,
+                    method=self.open_program,
                     executor=executor
                 ).as_dict()
                 )
@@ -109,9 +112,10 @@ class Twitchy(Flox):
             args = program_args.format(
                 url=f"{BASE_URL}/{id}", best=best, worst=worst)
             self.add_item(
-                title=f"Open Stream in {program_name}",
+                title=f"Open Stream in VLC",
                 subtitle=args,
                 icon=program_path,
+                # method=self.easy_vlc,
                 method=self.open_program,
                 parameters=[program_path, args]
             )
@@ -131,4 +135,4 @@ class Twitchy(Flox):
         self.browser_open(f"{BASE_URL}/{path}")
 
     def open_program(self, program_path, args):
-        proc = Popen([program_path, args])
+        proc = Popen([program_path, args, "best"])
